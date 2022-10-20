@@ -1,0 +1,30 @@
+﻿@model Quiz.Models.ViewModels.AnswerVM
+
+<table class="table table-striped" id="QuestionTable">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Answer
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Answers)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Character)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Answer1)
+                </td>
+                <td>
+                    <a asp-action="ViewAnswer" asp-route-id="@item.Id">Edit Answer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

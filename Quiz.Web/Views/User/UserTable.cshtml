@@ -1,0 +1,35 @@
+﻿@model Quiz.Models.ViewModels.UserVM
+@{
+    ViewData["Title"] = "UserTable";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+    <table class="table table-striped" id="UserTable">
+        <thead>
+            <tr>
+                <th>
+                    Username
+                </th>
+                <th>
+                    Role
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Quiz.Models.ViewModels.UserVM item in Model.Users)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Username)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Role)
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+

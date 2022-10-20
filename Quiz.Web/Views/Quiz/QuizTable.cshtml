@@ -1,0 +1,33 @@
+﻿@model Quiz.Web.Models.QuizTableVM
+@{
+    ViewData["Title"] = "QuizTable";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<table class="table table-striped" id="Hvo">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Title
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Quizzes)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    <a asp-action="questions" asp-route-id="@item.Id">Questions</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

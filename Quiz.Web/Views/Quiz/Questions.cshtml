@@ -7,9 +7,9 @@
             <th>
                 Question
             </th>
-            <th>
+            @*<th>
                 Answer
-            </th>
+            </th>*@
         </tr>
     </thead>
     <tbody>
@@ -19,9 +19,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Question1)
                 </td>
-                <td>
+                @*<td>
                     @Html.DisplayFor(modelItem => item.Answer)
-                </td>
+                </td>*@
                 <td>
                     <a asp-action="ViewQuestion" asp-route-id="@item.Id">Edit</a>
                 </td>

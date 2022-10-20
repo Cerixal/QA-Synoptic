@@ -122,10 +122,10 @@ namespace Quiz.Web.Controllers
         {
             source.Id = id;
             Question entity = _mapper.Map<QuestionVM, Question>(source);
-            
-                _qaRepo.Question.Add(entity);
-                await _qaRepo.SaveAsync();
-                return RedirectToAction("EditSuccess");
+
+            _qaRepo.Question.Add(entity);
+            await _qaRepo.SaveAsync();
+            return RedirectToAction("EditSuccess");
         }
 
         public async Task<IActionResult> ViewQuestion(int id, QuestionVM source)
@@ -136,48 +136,71 @@ namespace Quiz.Web.Controllers
         }
         public async Task<IActionResult> ViewAnswers(int id, AnswerVM source)
         {
-            IEnumerable<Answer> answers = await _qaRepo.Answer.GetAllAsync(e => e.QuestionId == id);
-
-            AnswerVM answerTableVM = new();
-
-            if (answers.Any())
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie") || HttpContext.Request.Cookies.ContainsKey("ViewCookie"))
             {
-                answerTableVM.Answers = new List<AnswerVM>();
-                foreach (var answer in answers)
+                IEnumerable<Answer> answers = await _qaRepo.Answer.GetAllAsync(e => e.QuestionId == id);
+
+                AnswerVM answerTableVM = new();
+
+                if (answers.Any())
                 {
-                    AnswerVM answerTable = _mapper.Map<Answer, AnswerVM>(answer);
-                    answerTableVM.Answers.Add(answerTable);
+                    answerTableVM.Answers = new List<AnswerVM>();
+                    foreach (var answer in answers)
+                    {
+                        AnswerVM answerTable = _mapper.Map<Answer, AnswerVM>(answer);
+                        answerTableVM.Answers.Add(answerTable);
+                    }
+                    return View(answerTableVM);
                 }
+                ViewData["NoPricesFoundMessage"] = "No values found, please select a new range";
                 return View(answerTableVM);
             }
-            ViewData["NoPricesFoundMessage"] = "No values found, please select a new range";
-            return View(answerTableVM);
+            return RedirectToAction("Restricted");
+
         }
         public async Task<IActionResult> ViewAnswer(int id, AnswerVM source)
         {
-            var Answer = _qaRepo.Answer.GetFirstOrDefault(e => e.Id == id);
-            AnswerVM entity = _mapper.Map<Answer, AnswerVM>(Answer);
-            return View(entity);
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie") || HttpContext.Request.Cookies.ContainsKey("ViewCookie"))
+            {
+                var Answer = _qaRepo.Answer.GetFirstOrDefault(e => e.Id == id);
+                AnswerVM entity = _mapper.Map<Answer, AnswerVM>(Answer);
+                return View(entity);
+            }
+            return RedirectToAction("Restricted");
         }
 
         [HttpPost]
         public async Task<IActionResult> EditQuestion(QuestionVM question)
         {
-            Question entity = _mapper.Map<QuestionVM, Question>(question);
-            await _qaRepo.Question.UpdateAsync(entity);
-            await _qaRepo.SaveAsync();
-            return RedirectToAction(nameof(EditSuccess));
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie"))
+            {
+                Question entity = _mapper.Map<QuestionVM, Question>(question);
+                await _qaRepo.Question.UpdateAsync(entity);
+                await _qaRepo.SaveAsync();
+                return RedirectToAction(nameof(EditSuccess));
+            }
+            return RedirectToAction("Restricted");
         }
 
         [HttpPost]
         public async Task<IActionResult> EditAnswer(AnswerVM answer)
         {
-            Answer entity = _mapper.Map<AnswerVM, Answer>(answer);
-            await _qaRepo.Answer.UpdateAsync(entity);
-            await _qaRepo.SaveAsync();
-            return RedirectToAction(nameof(EditSuccess));
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie"))
+            {
+                Answer entity = _mapper.Map<AnswerVM, Answer>(answer);
+                await _qaRepo.Answer.UpdateAsync(entity);
+                await _qaRepo.SaveAsync();
+                return RedirectToAction(nameof(EditSuccess));
+            }
+            return RedirectToAction("Restricted");
+
         }
         public IActionResult EditSuccess()
+        {
+            return View();
+        }
+
+        public IActionResult Restricted()
         {
             return View();
         }

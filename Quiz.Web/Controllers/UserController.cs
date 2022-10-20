@@ -79,7 +79,7 @@ namespace Quiz.Web.Areas.Quiz.Controllers
             }
             else
             {
-                return (RedirectToAction("login", "login"));
+                return (RedirectToAction("Restricted"));
             }
         }
     
@@ -150,6 +150,11 @@ namespace Quiz.Web.Areas.Quiz.Controllers
             {
                 return View();
             }
+        }
+
+        public IActionResult Restricted()
+        {
+            return View();
         }
     }
 }

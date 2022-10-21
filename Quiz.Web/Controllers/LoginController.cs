@@ -41,6 +41,7 @@ namespace Quiz.Web.Controllers
             };
             Response.Cookies.Append("EditCookie", "value1", cookieOptions);
             Response.Cookies.Append("ViewCookie", "value1", cookieOptions);
+            Response.Cookies.Append("RestrictedCookie", "value1", cookieOptions);
             return RedirectToAction("Login");
         }
 

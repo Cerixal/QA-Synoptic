@@ -1,0 +1,18 @@
+﻿@model Quiz.Models.ViewModels.AnswerVM
+
+<form asp-action="SubmitAnswer" id=" AddQuestion">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        @Html.DisplayNameFor(model => model.Character)
+        <input asp-for="Character" class="form-control" />
+        <span asp-validation-for="Character" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        @Html.DisplayNameFor(model => model.Answer1)
+        <input asp-for="Answer1" class="form-control" />
+        <span asp-validation-for="Answer1" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" id="button-ConfirmProdPrices" />
+    </div>
+</form>

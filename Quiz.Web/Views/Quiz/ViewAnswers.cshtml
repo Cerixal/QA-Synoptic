@@ -1,5 +1,7 @@
 ﻿@model Quiz.Models.ViewModels.AnswerVM
 
+@if(Model.Answers != null)
+{
 <table class="table table-striped" id="QuestionTable">
     <thead>
         <tr>
@@ -24,7 +26,16 @@
                 <td>
                     <a asp-action="ViewAnswer" asp-route-id="@item.Id">Edit Answer</a>
                 </td>
+                <td>
+                        <a asp-action="AddAnswer" asp-route-id="@item.QuestionId">Add Answer</a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+}
+else{
+<h1>
+    There are no other answers to be displayed
+</h1>
+}

@@ -19,13 +19,24 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.SharePoint.Client;
 using System.Security.Claims;
 using System.Formats.Asn1;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow;
 
 namespace Quiz.Web.Controllers
 {
+    public class quizId
+    { 
+
+        public static int QuizId { get; set; }
+        public static int QuestionId { get; set; }
+
+    }
+
     public class QuizController : Controller
     {
         private readonly IQAUnitOfWork _qaRepo;
         private readonly IMapper _mapper;
+        
 
         public QuizController(IQAUnitOfWork qaRepo, IMapper mapper)
         {
@@ -112,17 +123,43 @@ namespace Quiz.Web.Controllers
             return View(questionTableVM);
 
         }
-        public IActionResult AddQuestion()
+
+        public IActionResult AddAnswer(int id)
         {
-            return View();
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie"))
+            {
+                quizId.QuestionId = id;
+                return View();
+            }
+            return RedirectToAction("Restricted");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitAnswer(AnswerVM source, int id)
+        {
+            source.QuestionId = quizId.QuestionId;
+            Answer entity = _mapper.Map<AnswerVM, Answer>(source);
+            _qaRepo.Answer.Add(entity);
+            await _qaRepo.SaveAsync();
+            return RedirectToAction("EditSuccess");
+        }
+
+        public IActionResult AddQuestion(int id)
+        {
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie"))
+            {
+                quizId.QuizId = id;
+                return View();
+            }
+            return RedirectToAction("Restricted");
+
         }
 
         [HttpPost]
         public async Task<IActionResult> SubmitQuestion(QuestionVM source, int id)
         {
-            source.Id = id;
+            source.QuizID = quizId.QuizId;
             Question entity = _mapper.Map<QuestionVM, Question>(source);
-
             _qaRepo.Question.Add(entity);
             await _qaRepo.SaveAsync();
             return RedirectToAction("EditSuccess");
@@ -130,9 +167,13 @@ namespace Quiz.Web.Controllers
 
         public async Task<IActionResult> ViewQuestion(int id, QuestionVM source)
         {
-            var Question = _qaRepo.Question.GetFirstOrDefault(e => e.Id == id);
-            QuestionVM entity = _mapper.Map<Question, QuestionVM>(Question);
-            return View(entity);
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie"))
+            {
+                var Question = _qaRepo.Question.GetFirstOrDefault(e => e.Id == id);
+                QuestionVM entity = _mapper.Map<Question, QuestionVM>(Question);
+                return View(entity);
+            }
+            return RedirectToAction("Restricted");
         }
         public async Task<IActionResult> ViewAnswers(int id, AnswerVM source)
         {
@@ -160,7 +201,7 @@ namespace Quiz.Web.Controllers
         }
         public async Task<IActionResult> ViewAnswer(int id, AnswerVM source)
         {
-            if (HttpContext.Request.Cookies.ContainsKey("EditCookie") || HttpContext.Request.Cookies.ContainsKey("ViewCookie"))
+            if (HttpContext.Request.Cookies.ContainsKey("EditCookie"))
             {
                 var Answer = _qaRepo.Answer.GetFirstOrDefault(e => e.Id == id);
                 AnswerVM entity = _mapper.Map<Answer, AnswerVM>(Answer);
